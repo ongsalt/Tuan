@@ -1,6 +1,6 @@
 import { state } from "./reactive";
 import { runtime } from "./runtime";
-import { ElementProps, State, Template } from "./types";
+import { ElementProps, QElement, State, Template } from "./types";
 
 /*
  * Expected template inner
@@ -17,29 +17,39 @@ import { ElementProps, State, Template } from "./types";
 // const regex = /\{\{[^{}]+\}\}/g
 
 export function createElement(tag: keyof HTMLElementTagNameMap) {
-    return (props: ElementProps) => {
-        // create div
-        // mount to dom but where -> keep track of dom stack in runtime?
-        const el = document.createElement('div')
+    return (props: ElementProps): QElement => {
+        return () => {
+            // create div
+            // mount to dom but where -> keep track of dom stack in runtime?
+            const el = document.createElement(tag)
 
-        // Should not do this we should add subscriber for building text
-        if (props.template) {
-            console.log("updating innertext")
-            el.innerHTML = props.template.value
-            props.template._subscriber.push(it => el.innerHTML = it)
+            // Should not do this we should add subscriber for building text
+            if (props.template) {
+                console.log("updating innertext")
+                el.innerHTML = props.template.value
+                props.template._subscriber.push(it => el.innerHTML = it)
+            }
+
+            if (props.onclick) {
+                el.addEventListener('click', props.onclick)
+            }
+
+            if (props.children) {
+                runtime.domStack.push(el)
+                // do something with el context scope
+                props.children.forEach(it => {
+                    el.appendChild(it().htmlElement)
+                    // if this thing is mounted -> run onMount 
+                    // if not add to queue in runtime 
+                })
+
+                runtime.domStack.pop()
+            }
+
+            return {
+                htmlElement: el
+            }
         }
-
-        if (props.onclick) {
-            el.addEventListener('click', props.onclick)
-        }
-
-        runtime.domStack.push(el)
-
-        // do something with el context scope
-
-        runtime.domStack.pop()
-
-        return el
     }
 }
 

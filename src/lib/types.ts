@@ -3,8 +3,13 @@ export type Template = State<string>
 
 export type ElementProps =  {
     template?: Template,
-    children?: ElementProps[]
+    children?: QElement[]
+    class?: Template | string
     onclick?: EventListener
+}
+
+export type QElement = () => {
+    htmlElement: HTMLElement,
 }
 
 export type State<T> = {

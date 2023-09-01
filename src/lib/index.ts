@@ -1,13 +1,18 @@
 /* 
- *  Part
+ *  Todo
  *   - Template engine
  *      [later] Function component
+ *      children rendering
+ *      
  *   - Reactive
  *      Basic Idea: using Proxy
  *      computed hook
+ *      [DONE for now]
+ * 
  *   - Dom diff
- *  Notes
- *   - vue like lifecycle
+ *      when doing conditional rendering
+ *  
+ *   - Lifecycle hook
  *      component funciton only run once
  */
 
