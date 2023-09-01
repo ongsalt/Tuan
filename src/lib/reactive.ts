@@ -1,6 +1,10 @@
 import deepEqual from "deep-equal"
 import { State } from "./types"
-import { runtime } from "./runtime"
+
+const context = {
+    isTrackingDependencies: false,
+    trackedDependencies: [] as State<any>[]
+}
 
 export function state<T>(value: T): State<T> {
     const data: State<T> = {
@@ -13,8 +17,9 @@ export function state<T>(value: T): State<T> {
 
     return new Proxy(data, {
         get(target, p, receiver) {
-            if (runtime.isTrackingDependencies) {
-                runtime.trackedDependencies.push(target)
+            // Such a dirty way to implement
+            if (context.isTrackingDependencies) {
+                context.trackedDependencies.push(target)
             }
             return Reflect.get(target, p, receiver)
         },
@@ -37,17 +42,17 @@ export function state<T>(value: T): State<T> {
 
 export function derived<T>(transform: () => T) {
     // Track dependencies using scope
-    runtime.isTrackingDependencies = true
+    context.isTrackingDependencies = true
     const data = state(transform())
-    runtime.isTrackingDependencies = false
+    context.isTrackingDependencies = false
 
-    runtime.trackedDependencies.map(it =>
+    context.trackedDependencies.map(it =>
         it._subscriber.push(it => {
             data.value = transform()
         })
     )
 
-    runtime.trackedDependencies = []
+    context.trackedDependencies = []
     return data
 }
 

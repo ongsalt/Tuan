@@ -1,5 +1,4 @@
-import { state } from "./reactive";
-import { runtime } from "./runtime";
+import { combine, derived, state } from "./reactive";
 import { ElementProps, QElement, State, Template } from "./types";
 
 /*
@@ -16,34 +15,39 @@ import { ElementProps, QElement, State, Template } from "./types";
 
 // const regex = /\{\{[^{}]+\}\}/g
 
+const context = {
+    domStack: [] as HTMLElement[]
+}
+
 export function createElement(tag: keyof HTMLElementTagNameMap) {
     return (props: ElementProps): QElement => {
         return () => {
             // create div
-            // mount to dom but where -> keep track of dom stack in runtime?
+            // mount to dom but where -> keep track of dom stack in context?
             const el = document.createElement(tag)
 
             // Should not do this we should add subscriber for building text
             if (props.template) {
-                console.log("updating innertext")
+                // console.log("updating innertext")
                 el.innerHTML = props.template.value
                 props.template._subscriber.push(it => el.innerHTML = it)
             }
+
 
             if (props.onclick) {
                 el.addEventListener('click', props.onclick)
             }
 
             if (props.children) {
-                runtime.domStack.push(el)
+                context.domStack.push(el)
                 // do something with el context scope
                 props.children.forEach(it => {
                     el.appendChild(it().htmlElement)
                     // if this thing is mounted -> run onMount 
-                    // if not add to queue in runtime 
+                    // if not add to queue in context 
                 })
 
-                runtime.domStack.pop()
+                context.domStack.pop()
             }
 
             return {
@@ -82,7 +86,7 @@ export function q(strings: TemplateStringsArray, ...rest: (string | State<any>)[
     const dependencies: State<any>[] = rest.filter((it): it is State<any> => (typeof it !== 'string'))
 
     dependencies.map(it => {
-        console.log("Registering callback")
+        // console.log("Registering callback")
         it._subscriber.push(() => {
             innerHtmlState.value = update()
         })
@@ -91,7 +95,9 @@ export function q(strings: TemplateStringsArray, ...rest: (string | State<any>)[
     return innerHtmlState
 }
 
-export function syncDomTree() {
+export function qIf(condition: () => boolean, element: QElement) {
+    const shouldShow = derived(condition)
+    // Register q-[id] to element => save it position { parent, index } change when other node with same parent got hide
 
 }
 

@@ -1,18 +1,19 @@
 /*
- *  
+ *  the only real need for runtime is for dom colliding
+ *  the rest of this implementation is just global variables
  */
 
-import { ElementProps, State } from "./types"
+import { QElement } from "./types"
 
 export class Runtime {
-    public domStack: HTMLElement[] = []
 
-    public isTrackingDependencies = false
-    public trackedDependencies: State<any>[] = []
+    constructor(
+        private root: QElement
+    ) {}
 
-    mount(target: string) {
-        return document.querySelector(target)
+    mount(targetQuery: string) {
+        const target = document.querySelector(targetQuery)
+
+        target?.appendChild(this.root().htmlElement)
     }
 }
-
-export const runtime = new Runtime()

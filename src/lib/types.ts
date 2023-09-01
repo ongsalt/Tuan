@@ -1,12 +1,13 @@
 // Need funcion to pass template
 export type Template = State<string>
 
-export type ElementProps =  {
-    template?: Template,
+export type ElementProps = {
+    template?: Template
     children?: QElement[]
     class?: Template | string
     onclick?: EventListener
-}
+} 
+// & ({} | { qFor: <T>() => T })
 
 export type QElement = () => {
     htmlElement: HTMLElement,
@@ -17,6 +18,6 @@ export type State<T> = {
     oldValue?: T,
     _subscriber: Subscriber<T>[],
     _subscribe: (s: Subscriber<T>) => void
-} 
+}
 
 export type Subscriber<T> = (value: T, oldValue?: T) => any
