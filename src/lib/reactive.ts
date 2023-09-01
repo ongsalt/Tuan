@@ -1,3 +1,4 @@
+import deepEqual from "deep-equal"
 import { State } from "./types"
 
 export function state<T>(value: T): State<T> {
@@ -15,12 +16,16 @@ export function state<T>(value: T): State<T> {
         // },
         set(target, p, newValue, receiver) {
             // Do something if target is "value"
-            if (p === "value") {
-                target._subscriber.forEach(s => {
-                    s(newValue as T, target.oldValue)
-                })
+            const ok = Reflect.set(target, p, newValue, receiver)
+            if (ok && p === "value") {
+                // only re run if new value is not the same
+                if (!deepEqual(value, data.oldValue)) {
+                    target._subscriber.forEach(s => {
+                        s(newValue as T, target.oldValue)
+                    })
+                }
             }
-            return Reflect.set(target, p, newValue, receiver)
+            return ok
         },
     })
 }

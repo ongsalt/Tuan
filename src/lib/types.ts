@@ -1,11 +1,10 @@
 // Need funcion to pass template
-export type Template = {}
+export type Template = State<string>
 
 export type ElementProps =  {
     template?: Template,
     children?: ElementProps[]
     onclick?: EventListener
-
 }
 
 export type State<T> = {

@@ -18,7 +18,7 @@ const incbtn2 = document.getElementById('inc2')
 const num = state(1)
 const num2 = state(1)
 
-const num3 = combine(num, num2, (i, j) => {
+const sum = combine(num, num2, (i, j) => {
     const result = i + j
     console.log(i + j)
     return result
@@ -34,7 +34,7 @@ incbtn2?.addEventListener('click', () => {
 
 
 const a = div({
-    template: q`my name is ${num}`
+    template: q`num1 is ${num} | num2 is ${num2} | sum is ${sum}`
 })
 
 
