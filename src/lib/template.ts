@@ -1,9 +1,10 @@
 import { combine, derived, state } from "./reactive";
-import { ElementProps, QElement, State, Template } from "./types";
+import { runtime } from "./runtime";
+import { ElementProps, QElement, QIfElement, State, Template } from "./types";
 
 /*
  * Expected template inner
-//  * my name is {{ name }}  NOOOOO
+//  * my name is {{ name }}  NOOOOO it too hard to do
  * my name is ${name}
  * then check if name is state 
  *   if yes
@@ -15,13 +16,15 @@ import { ElementProps, QElement, State, Template } from "./types";
 
 // const regex = /\{\{[^{}]+\}\}/g
 
+// Build(?) time only context
 const context = {
-    domStack: [] as HTMLElement[]
+    domStack: [] as HTMLElement[],
+    index: 0,
 }
 
 export function createElement(tag: keyof HTMLElementTagNameMap) {
-    return (props: ElementProps): QElement => {
-        return () => {
+    return (props: ElementProps): QElement => ({
+        render() {
             // create div
             // mount to dom but where -> keep track of dom stack in context?
             const el = document.createElement(tag)
@@ -33,7 +36,6 @@ export function createElement(tag: keyof HTMLElementTagNameMap) {
                 props.template._subscriber.push(it => el.innerHTML = it)
             }
 
-
             if (props.onclick) {
                 el.addEventListener('click', props.onclick)
             }
@@ -42,7 +44,8 @@ export function createElement(tag: keyof HTMLElementTagNameMap) {
                 context.domStack.push(el)
                 // do something with el context scope
                 props.children.forEach(it => {
-                    el.appendChild(it().htmlElement)
+                    ++context.index
+                    el.appendChild(it.render())
                     // if this thing is mounted -> run onMount 
                     // if not add to queue in context 
                 })
@@ -50,11 +53,13 @@ export function createElement(tag: keyof HTMLElementTagNameMap) {
                 context.domStack.pop()
             }
 
-            return {
-                htmlElement: el
-            }
-        }
-    }
+            return el
+        },
+        onMount() {
+
+        },
+
+    })
 }
 
 /**
@@ -95,9 +100,57 @@ export function q(strings: TemplateStringsArray, ...rest: (string | State<any>)[
     return innerHtmlState
 }
 
-export function qIf(condition: () => boolean, element: QElement) {
+/**
+ * Change interface later
+ * should be like this qif({ condition, element, elseElement })
+ * condition should be State<boolean> | boolean instead of having to derived later
+ */
+export function qIf(condition: () => boolean, element: QElement, elseElement?: QElement): QIfElement {
     const shouldShow = derived(condition)
-    // Register q-[id] to element => save it position { parent, index } change when other node with same parent got hide
+    const id = runtime.generateNodeId()
+    // Register q-[id] to element => leave comment in tree to mark its position in dom 
+
+    const resElement: QIfElement = {
+        if: element,
+        render() {
+            const defaultElement = element.render()
+            shouldShow._subscriber.push(it => {
+                if (it) {
+                    runtime.showNode(id)
+                } else {
+                    runtime.hideNode(defaultElement, id)
+                }
+            })
+            if (shouldShow.value) {
+                return defaultElement
+            } else {
+                return runtime.hideNode(defaultElement, id)
+            }
+        },
+    }
+
+    if (elseElement) {
+        resElement.else = elseElement
+    }
+
+    return resElement
+}
+
+export function qFragment(...elements: QElement[]): QElement {
+    const fragment = new DocumentFragment()
+
+    elements.forEach(it => {
+        fragment.appendChild(it.render())
+    })
+
+    return {
+        render() {
+            return fragment
+        },
+        onMount() {
+            // run the rest on mount
+        },
+    }
 
 }
 

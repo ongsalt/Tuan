@@ -11,6 +11,7 @@
  * 
  *   - Dom diff
  *      when doing conditional rendering
+ *      or i should just do QElement | State<QElement>
  *  
  *   - Lifecycle hook
  *      component funciton only run once

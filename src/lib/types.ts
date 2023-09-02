@@ -1,6 +1,16 @@
 // Need funcion to pass template
 export type Template = State<string>
 
+export interface QElement {
+    render(): Node
+    onMount?: () => void
+}
+
+export interface QIfElement extends QElement {
+    if: QElement
+    else?: QElement
+} 
+
 export type ElementProps = {
     template?: Template
     children?: QElement[]
@@ -8,10 +18,6 @@ export type ElementProps = {
     onclick?: EventListener
 } 
 // & ({} | { qFor: <T>() => T })
-
-export type QElement = () => {
-    htmlElement: HTMLElement,
-}
 
 export type State<T> = {
     value: T,

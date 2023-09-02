@@ -1,6 +1,7 @@
 import deepEqual from "deep-equal"
 import { State } from "./types"
 
+// Build(?) time only context
 const context = {
     isTrackingDependencies: false,
     trackedDependencies: [] as State<any>[]
@@ -28,8 +29,8 @@ export function state<T>(value: T): State<T> {
             const ok = Reflect.set(target, p, newValue, receiver)
             if (ok && p === "value") {
                 // only re run if new value is not the same
-                target.oldValue = newValue
-                if (!deepEqual(value, data.oldValue)) {
+                if (!deepEqual(newValue, data.oldValue)) {
+                    target.oldValue = newValue
                     target._subscriber.forEach(s => {
                         s(newValue as T, target.oldValue)
                     })
