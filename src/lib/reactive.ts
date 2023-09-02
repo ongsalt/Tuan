@@ -1,7 +1,22 @@
 import deepEqual from "deep-equal"
 import { State } from "./types"
 
-// Build(?) time only context
+/*
+    Build(?) time only context
+    This one doesn't work with template: ${state.value ? "" : ""}
+
+    Svelte is compiler it can do this anytime. React use virtual dom.
+
+    Bullshit way to solve this is change the syntax to ${() => (state.value ? "" : "")} 
+    but this ways has the need to chage q parser to accept funtion as one of arguments and derive it
+    or create derived state: () => (state.value ? "" : "") in other place and use it as state 
+
+
+    Vue approach: When a dependency used during mount changes, the effect re-runs. from their wiki
+    I can't do this becuase vue use A FUCKING TEMPLATING LANGUAGE not full js
+
+    Or should i just create a templating language -> Better do this the svelte way
+*/
 const context = {
     isTrackingDependencies: false,
     trackedDependencies: [] as State<any>[]
@@ -59,7 +74,7 @@ export function derived<T>(transform: () => T) {
 
 
 /**
- * fine-grained reactivity, better than derived
+ * fine-grained reactivity, better than derived(?)
  * @param state1 State to combine
  * @param state2 Other state to combine
  * @param combinator Function that reduce those two state value

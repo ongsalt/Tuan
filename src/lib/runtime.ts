@@ -5,8 +5,6 @@
  *  do EventBus later becuase it cool
  */
 
-import { QElement } from "./types"
-
 const S4 = () => (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
 
 type HiddenElement = {
@@ -48,8 +46,12 @@ export class Runtime {
         const { elseNode: comment, node } = hidden
         // This thing is used for replace commnet <-> element
         comment.parentNode?.replaceChild(node, comment)
-
+        
         this.hiddenElement.delete(id)
+    }
+    
+    swithNode(newNode: Node, oldNode: Node) {
+        oldNode.parentNode?.replaceChild(newNode, oldNode)
     }
 
 }

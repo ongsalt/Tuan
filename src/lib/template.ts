@@ -90,12 +90,14 @@ export function q(strings: TemplateStringsArray, ...rest: (string | State<any>)[
 
     const dependencies: State<any>[] = rest.filter((it): it is State<any> => (typeof it !== 'string'))
 
+    console.log("Dependencies of", innerHtmlState.value)
     dependencies.map(it => {
-        // console.log("Registering callback")
+        console.log("Registering callback", it)
         it._subscriber.push(() => {
             innerHtmlState.value = update()
         })
     })
+    console.log("done")
 
     return innerHtmlState
 }
@@ -114,16 +116,33 @@ export function qIf(condition: () => boolean, element: QElement, elseElement?: Q
         if: element,
         render() {
             const defaultElement = element.render()
+            let internalElseElement: Node;
+            if (this.else) {
+                internalElseElement = this.else.render()
+            }
             shouldShow._subscriber.push(it => {
+                if (this.else) {
+                    if (it) {
+                        runtime.swithNode(defaultElement, internalElseElement)
+                    } else {
+                        runtime.swithNode(internalElseElement, defaultElement)
+                    }
+                    return
+                }
                 if (it) {
                     runtime.showNode(id)
                 } else {
                     runtime.hideNode(defaultElement, id)
                 }
             })
+
+
             if (shouldShow.value) {
                 return defaultElement
             } else {
+                if (this.else) {
+                    return internalElseElement!
+                }
                 return runtime.hideNode(defaultElement, id)
             }
         },
