@@ -138,6 +138,7 @@ export function qIf(condition: () => boolean, element: QElement, elseElement?: Q
 
 
             if (shouldShow.value) {
+                console.log(defaultElement)
                 return defaultElement
             } else {
                 if (this.else) {
@@ -155,6 +156,12 @@ export function qIf(condition: () => boolean, element: QElement, elseElement?: Q
     return resElement
 }
 
+
+/**
+ * Unstable, Don't use this (at least for now)
+ * @param elements 
+ * @returns New elements that render all passed in element
+ */
 export function qFragment(...elements: QElement[]): QElement {
     const fragment = new DocumentFragment()
 
@@ -181,6 +188,8 @@ export const header = createElement('header')
 export const a = createElement('a')
 export const button = createElement('button')
 export const p = createElement('p')
+export const hr = createElement('hr')
+export const br = createElement('br')
 export const h1 = createElement('h1')
 export const h2 = createElement('h2')
 export const h3 = createElement('h3')

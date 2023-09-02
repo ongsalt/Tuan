@@ -12,6 +12,7 @@ import { State } from "./types"
     or create derived state: () => (state.value ? "" : "") in other place and use it as state 
 
 
+    
     Vue approach: When a dependency used during mount changes, the effect re-runs. from their wiki
     I can't do this becuase vue use A FUCKING TEMPLATING LANGUAGE not full js
 

@@ -29,6 +29,8 @@ export class Runtime {
         
         this.hiddenElement.set(id, { elseNode: comment, node })
 
+        // this should check if it nest hided or not
+
         // This thing is used for replace commnet <-> element
         // comment.parentNode?.replaceChild(comment, node)
         node.parentNode?.replaceChild(comment, node)
