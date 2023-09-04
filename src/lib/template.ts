@@ -66,17 +66,24 @@ export function createElement(tag: keyof HTMLElementTagNameMap) {
  * @summary template literal if state got passed in this will keep track of them
  * @example my name is ${name}
  */
-export function q(strings: TemplateStringsArray, ...rest: (string | State<any>)[]): Template {
+export function q(strings: TemplateStringsArray, ...rest: (string | (() => string) | State<any>)[]): Template {
     // Should subscribe to every state
     // Should return observable
 
+    const derivedRest: (string | State<any>)[] = rest.map(it => {
+        if (typeof it === 'function') {
+            return derived(it)
+        }
+        return it
+    })
+
     const update = () => strings.reduce((prev, it, i) => {
         if (i !== strings.length - 1) {
-            const r = rest[i]
+            const r = derivedRest[i]
             if (typeof r === 'string') {
                 return prev + it + r
             } else {
-                if (typeof r.value === 'object') {
+                  if (typeof r.value === 'object') {
                     return prev + it + r.value.toString()
                 } else {
                     return prev + it + r.value

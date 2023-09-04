@@ -26,4 +26,6 @@ export type State<T> = {
     _subscribe: (s: Subscriber<T>) => void
 }
 
+export type StateOrToBeDerive<T> = State<T> | (() => T)
+
 export type Subscriber<T> = (value: T, oldValue?: T) => any

@@ -23,7 +23,6 @@ export class Runtime {
         return id
     }
 
-
     hideNode(node: Node, id: string) {
         const comment = document.createComment(id)
         

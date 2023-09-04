@@ -12,7 +12,6 @@ import './app.css'
 
 import { button, div, h1, h2, h3, p, q, qFragment, qIf } from "./lib/template";
 import { combine, derived, state } from "./lib/reactive";
-import { runtime } from "./lib/runtime";
 
 const app = document.getElementById('app')
 
@@ -20,7 +19,6 @@ const num = state(1)
 const num2 = state(1)
 let show = state(true)
 let show2 = state(true)
-
 
 const sum = combine(num, num2, (i, j) => {
     const result = i + j
@@ -68,7 +66,7 @@ const conditionalRenderingTest = div({
         }),
         button({
             onclick: () => show.value = !show.value,
-            template: q`${derived(() => show.value ? "hide" : "show")}`
+            template: q`${() => show.value ? "hide" : "show"}`
             // this wont work, need to add derived(() => ...) or modify q and do () => ...
         }),
         qIf(
@@ -80,7 +78,7 @@ const conditionalRenderingTest = div({
                     }),
                     button({
                         onclick: () => show2.value = !show2.value,
-                        template: q`${derived(() => show2.value ? "hide" : "show")}`
+                        template: q`${() => show2.value ? "hide" : "show"}`
                     }),
                     qIf(
                         () => show2.value,

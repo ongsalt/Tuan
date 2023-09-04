@@ -7,7 +7,10 @@
  *   - Reactive
  *      Basic Idea: using Proxy
  *      computed hook
- *      [DONE for now]
+ *      input binding
+ * 
+ *   - DX/Interface Transformation
+ *      vfc-or-.svelte-like component file
  * 
  *   - Dom diff
  *      when doing conditional rendering
@@ -20,7 +23,9 @@
 import * as Reactive from './reactive'
 import * as Template from './template'
 
-const Qaeda = { Reactive, Template }
+export * from './reactive'
+export * from './template'
+
+const Qaeda = { ...Reactive, ...Template }
 
 export default Qaeda
-export { Reactive, Template }
