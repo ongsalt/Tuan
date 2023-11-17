@@ -11,6 +11,10 @@ export interface QIfElement extends QElement {
     else?: QElement
 } 
 
+export interface QForElement extends QElement {
+
+} 
+
 export type ElementProps = {
     template?: Template
     children?: QElement[]

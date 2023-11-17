@@ -21,10 +21,10 @@
  */
 
 import * as Reactive from './reactive'
-import * as Template from './template'
+import * as Template from './element'
 
 export * from './reactive'
-export * from './template'
+export * from './element'
 
 const Qaeda = { ...Reactive, ...Template }
 

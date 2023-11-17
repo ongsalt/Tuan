@@ -10,7 +10,7 @@
  */
 import './app.css'
 
-import { button, div, h1, h2, h3, p, q, qFragment, qIf } from "./lib/template";
+import { button, div, h1, h2, h3, p, q, qFragment, qIf } from "./lib/element";
 import { combine, derived, state } from "./lib/reactive";
 
 const app = document.getElementById('app')
